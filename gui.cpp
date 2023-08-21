@@ -246,67 +246,46 @@ void gui::EndRender() noexcept
 char inputBuffer[256] = "";
 char dataBuffer[4082] = "";
 std::string request = "GET";
+const char* methods[4] = { "GET", "POST", "DELETE", "PUT" };
+int selectedMethod = gui::selectedMethod;
+bool isInputBoxActive = false;
+
 
 void gui::Render() noexcept
 {
 	static bool isFirstRender = true; // Static variable to track the first render
-	const char* cStringReq = request.c_str();
-	std::string buttonText = "Send " + std::string(cStringReq) + " request";
+	std::string buttonText = "Send " + std::string(methods[selectedMethod]) + " request";
 	ImGui::SetNextWindowPos({ 0, 0 });
 	ImGui::SetNextWindowSize({ WIDTH, HEIGHT });
 	ImGui::Begin(
 		"Send requests",
 		&exit,
 		ImGuiWindowFlags_NoSavedSettings |
-		ImGuiWindowFlags_NoMove
+		ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_NoCollapse
 	);
-
-	if (ImGui::Button(request.c_str()))
-		gui::newWindow = true;
-
-	ImGui::SameLine();
-	ImGui::Text("Request type");
 
 	if (gui::newWindow && isFirstRender)
 	{
 		ImGui::SetNextWindowSize({ 600, 500 }); // Set initial size for the new window
 		isFirstRender = false; // Mark that the initial render has occurred
 	}
+	if (ImGui::Combo("Method", &selectedMethod, methods, IM_ARRAYSIZE(methods))) {
 
-	if (gui::newWindow) 
-	{
-		ImGui::Begin("Select request type", &gui::newWindow, ImGuiWindowFlags_NoMove); 
-
-		ImGui::Text("Requests:");
-
-		if (ImGui::Button("GET", ImVec2(50, 0))) 
-			request = "GET";
-
-		ImGui::SameLine();
-
-		if (ImGui::Button("POST", ImVec2(50, 0))) 
-			request = "POST";
-
-		ImGui::SameLine();
-
-		if (ImGui::Button("DELETE", ImVec2(50, 0))) 
-			request = "DELETE"; 
-		
-		ImGui::SameLine();
-
-		if (ImGui::Button("PUT", ImVec2(50, 0))) 
-			request = "PUT";
-		
-		gui::requestType = request;
-		ImGui::End(); // End the new window
 	}
-	if (ImGui::Button(buttonText.c_str()))
-		sendRequest(request);
-	if (ImGui::InputText("InputField", inputBuffer, sizeof(inputBuffer))) {
+	if (ImGui::Button(buttonText.c_str())) {
 		gui::url = inputBuffer;
+		sendRequest(selectedMethod);
 	}
+
+	if (ImGui::InputText("InputField", inputBuffer, sizeof(inputBuffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
+		gui::url = inputBuffer;
+		sendRequest(selectedMethod); 
+	}
+	static bool Hello = true;
+	ImGui::ShowDemoWindow(&Hello);
 	const char* cString = result.c_str();
-	ImGui::InputTextMultiline("##readonly", const_cast<char*>(cString), strlen(cString) + 1, ImVec2(WIDTH, 200), ImGuiInputTextFlags_ReadOnly);
+	ImGui::InputTextMultiline("##readonly", const_cast<char*>(cString), strlen(cString) + 1, ImVec2(WIDTH - 10, 200), ImGuiInputTextFlags_ReadOnly);
 
 	ImGui::End();
 }

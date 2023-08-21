@@ -6,17 +6,16 @@
 
 namespace gui
 {
-	// Remember to clean up the code it's a mess, request type gets defined here but it's also passed to a function
-	// So we are using 2 different variables for the same thing and it looks awfull
+
 	inline bool newWindow = false;
-	constexpr int WIDTH = 700;
-	constexpr int HEIGHT = 500;
+	constexpr int WIDTH = 1200;
+	constexpr int HEIGHT = 1000;
 	inline std::string result = "";
 	inline bool exit = true;
 	inline HWND window = nullptr;
 	inline WNDCLASSEXA windowClass = { };
-	inline std::string requestType = "GET";
-	void sendRequest(std::string requestType);
+	inline int selectedMethod = 0;
+	void sendRequest(int requestType);
 	inline std::string url = "";
 
 	inline POINTS position = { };
