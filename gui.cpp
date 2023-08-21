@@ -274,13 +274,15 @@ void gui::Render() noexcept
 
 	}
 	if (ImGui::Button(buttonText.c_str())) {
-		gui::url = inputBuffer;
-		sendRequest(selectedMethod);
+		url = inputBuffer;
+		eRequestType requestTypeEnum = static_cast<eRequestType>(selectedMethod);
+		sendRequest(requestTypeEnum, url);
 	}
 
 	if (ImGui::InputText("InputField", inputBuffer, sizeof(inputBuffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
-		gui::url = inputBuffer;
-		sendRequest(selectedMethod); 
+		url = inputBuffer;
+		eRequestType requestTypeEnum = static_cast<eRequestType>(selectedMethod);
+		sendRequest(requestTypeEnum, url);
 	}
 	static bool Hello = true;
 	ImGui::ShowDemoWindow(&Hello);

@@ -6,6 +6,13 @@
 
 namespace gui
 {
+	enum class eRequestType {
+		kGETRequest = 0,
+		kPOSTRequest = 1,
+		kDELETERequest = 2,
+		kPUTRequest = 3,
+		kUnknownRequest = 4
+	};
 
 	inline bool newWindow = false;
 	constexpr int WIDTH = 1200;
@@ -15,7 +22,7 @@ namespace gui
 	inline HWND window = nullptr;
 	inline WNDCLASSEXA windowClass = { };
 	inline int selectedMethod = 0;
-	void sendRequest(int requestType);
+	void sendRequest(eRequestType requestType, const std::string& url);
 	inline std::string url = "";
 
 	inline POINTS position = { };

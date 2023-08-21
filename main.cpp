@@ -12,14 +12,14 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
     response->append(static_cast<char*>(contents), totalSize);
     return totalSize;
 }
-class CurlWrapper {
+class CurlHTTP {
     public:
-    CurlWrapper() {
+    CurlHTTP() {
         curl_global_init(CURL_GLOBAL_DEFAULT);
         curl = curl_easy_init();
     }
 
-    ~CurlWrapper() {
+    ~CurlHTTP() {
         if (curl) {
             curl_easy_cleanup(curl);
             curl_global_cleanup();
@@ -33,16 +33,6 @@ class CurlWrapper {
 private:
     CURL* curl;
 };
-
-enum class eRequestType 
-{
-    kUnknownRequest = 0,
-    kGETRequest = 1,
-    kPOSTRequest = 2,
-    kDELETERequest = 3,
-    kPUTRequest = 4
-};
-
 
 
 static void get(CURL* curl, CURLcode res, Json::CharReaderBuilder reader, Json::Value root, std::string errs) 
@@ -141,10 +131,10 @@ static void put(CURL* curl, CURLcode res, Json::CharReaderBuilder reader, Json::
 
 
 
-void gui::sendRequest(int type) 
+void gui::sendRequest(gui::eRequestType requestType, const std::string& url)
 {
-    CurlWrapper curlWrapper;
-    CURL* curl = curlWrapper.getHandle();
+    CurlHTTP curlHTTP;
+    CURL* curl = curlHTTP.getHandle();
     if (!curl)
         return;
 
@@ -153,23 +143,23 @@ void gui::sendRequest(int type)
     Json::Value root;
     std::string errs;
 
-    switch (type)
+    switch (requestType)
     {
-    case 0:
+    case gui::eRequestType::kGETRequest:
         get(curl, res, reader, root, errs);
         break;
-    case 1:
+    case gui::eRequestType::kPOSTRequest:
         post(curl, res, reader, root, errs);
         break;
-    case 2:
+    case gui::eRequestType::kDELETERequest:
         del(curl, res, reader, root, errs);
         break;
-    case 3:
+    case gui::eRequestType::kPUTRequest:
         put(curl, res, reader, root, errs);
         break;
     default:
         break;
-            
+
     }
 }
 
